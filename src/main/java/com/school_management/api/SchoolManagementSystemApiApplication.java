@@ -1,7 +1,13 @@
 package com.school_management.api;
 
+import com.school_management.api.entities.User;
+import com.school_management.api.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class SchoolManagementSystemApiApplication {
@@ -10,4 +16,16 @@ public class SchoolManagementSystemApiApplication {
 		SpringApplication.run(SchoolManagementSystemApiApplication.class, args);
 	}
 
+    @Bean
+    @Transactional
+    public CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder){
+        return args -> {
+            User admin = new User();
+            admin.setUsername("admin@admin.com"); // actually email
+            admin.setRole("ADMIN");
+            admin.setPassword(passwordEncoder.encode("superadmin"));
+            admin.setActive(true);
+            userRepository.save(admin);
+        };
+    }
 }
