@@ -21,6 +21,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // to be removed
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
