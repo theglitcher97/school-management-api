@@ -18,10 +18,10 @@ public class Teacher {
     @JoinColumn(name = "id")
     private User user;
 
-    @Column(nullable = false, length = 64)
+    @Column(name = "first_name", nullable = false, length = 64)
     private String firstName;
 
-    @Column(nullable = false, length = 64)
+    @Column(name = "last_name",nullable = false, length = 64)
     private String lastName;
 
     @Column(nullable = false, unique = true, length = 10)

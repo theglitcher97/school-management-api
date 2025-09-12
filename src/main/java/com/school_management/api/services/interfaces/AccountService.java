@@ -1,0 +1,9 @@
+package com.school_management.api.services.interfaces;
+
+import com.school_management.api.dto.AccountCreatedDTO;
+import com.school_management.api.dto.CreateUserAccountDTO;
+import org.springframework.http.ResponseEntity;
+
+public interface AccountService {
+    ResponseEntity<AccountCreatedDTO> createAccount(CreateUserAccountDTO accountDTO);
+}

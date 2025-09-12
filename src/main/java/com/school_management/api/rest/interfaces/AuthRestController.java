@@ -1,4 +1,4 @@
-package com.school_management.api.rest.interfaces.auth;
+package com.school_management.api.rest.interfaces;
 
 import com.school_management.api.dto.LoginDTO;
 import org.springframework.validation.annotation.Validated;
