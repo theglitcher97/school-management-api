@@ -20,12 +20,14 @@ public class SchoolManagementSystemApiApplication {
     @Transactional
     public CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder){
         return args -> {
-            User admin = new User();
-            admin.setUsername("admin@admin.com"); // actually email
-            admin.setRole("ADMIN");
-            admin.setPassword(passwordEncoder.encode("superadmin"));
-            admin.setActive(true);
-            userRepository.save(admin);
+            userRepository.findByUsername("admin@admin.com").orElseGet(() -> {
+                User admin = new User();
+                admin.setUsername("admin@admin.com"); // actually email
+                admin.setRole("ADMIN");
+                admin.setPassword(passwordEncoder.encode("superadmin"));
+                admin.setActive(true);
+                return userRepository.save(admin);
+            });
         };
     }
 }
