@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class SchoolManagementSystemApiApplication {
+    private final String ADMIN_EMAIL = "admin@admin.com";
+    private final String ADMIN_PASSWORD = "adminadmin";
 
 	public static void main(String[] args) {
 		SpringApplication.run(SchoolManagementSystemApiApplication.class, args);
@@ -20,11 +22,11 @@ public class SchoolManagementSystemApiApplication {
     @Transactional
     public CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder){
         return args -> {
-            userRepository.findByUsername("admin@admin.com").orElseGet(() -> {
+            userRepository.findByUsername(ADMIN_EMAIL).orElseGet(() -> {
                 User admin = new User();
-                admin.setUsername("admin@admin.com"); // actually email
+                admin.setUsername(ADMIN_EMAIL); // actually email
                 admin.setRole("ADMIN");
-                admin.setPassword(passwordEncoder.encode("superadmin"));
+                admin.setPassword(passwordEncoder.encode(ADMIN_PASSWORD));
                 admin.setActive(true);
                 return userRepository.save(admin);
             });
