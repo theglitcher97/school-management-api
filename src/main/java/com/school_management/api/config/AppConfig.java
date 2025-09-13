@@ -16,7 +16,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 @Configuration
@@ -31,7 +30,7 @@ public class AppConfig {
         // Defines which roles has access to which endpoints
         httpSecurity.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/v1/accounts", "/api/v1/accounts/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
         // disables csrf

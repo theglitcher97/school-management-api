@@ -4,6 +4,8 @@ import com.school_management.api.dto.AccountCreatedDTO;
 import com.school_management.api.dto.CreateUserAccountDTO;
 import org.springframework.http.ResponseEntity;
 
-public interface AccountService {
+public interface UsersService {
     ResponseEntity<AccountCreatedDTO> createAccount(CreateUserAccountDTO accountDTO);
+
+    String resetPassword(Long userId);
 }

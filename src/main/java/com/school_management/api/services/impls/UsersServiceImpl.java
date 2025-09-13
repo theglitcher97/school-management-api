@@ -6,11 +6,12 @@ import com.school_management.api.entities.User;
 import com.school_management.api.enums.USER_ROLE;
 import com.school_management.api.enums.USER_TYPE;
 import com.school_management.api.repositories.UserRepository;
-import com.school_management.api.services.interfaces.AccountService;
+import com.school_management.api.services.interfaces.UsersService;
 import com.school_management.api.services.interfaces.StudentService;
 import com.school_management.api.services.interfaces.TeacherService;
 import com.school_management.api.utils.PasswordGenerator;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 @AllArgsConstructor
-public class AccountServiceImpl implements AccountService {
+public class UsersServiceImpl implements UsersService {
     private final int DEFAULT_PASSWORD_LENGTH = 10;
 
     private final UserRepository userRepository;
@@ -64,5 +63,18 @@ public class AccountServiceImpl implements AccountService {
         // todo: send credential to user by email
         AccountCreatedDTO accountCreatedDTO = new AccountCreatedDTO(accountDTO.getEmail(), generatedPassword, code);
         return ResponseEntity.status(HttpStatus.CREATED).body(accountCreatedDTO);
+    }
+
+    @Override
+    @Transactional
+    public String resetPassword(Long userId) {
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+
+        String newPassword = this.passwordGenerator.generatePassword(DEFAULT_PASSWORD_LENGTH);
+
+        user.setPassword(this.passwordEncoder.encode(newPassword));
+        this.userRepository.save(user);
+        return newPassword;
     }
 }
