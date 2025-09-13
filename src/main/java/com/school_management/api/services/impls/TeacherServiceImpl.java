@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -32,6 +33,11 @@ public class TeacherServiceImpl implements TeacherService {
                         .build();
 
         teacher = this.teacherRepository.save(teacher);
-        return new TeacherDTO(teacher.getFirstName(), teacher.getLastName(), teacher.getCode());
+        return new TeacherDTO(user.getUsername(), teacher.getFirstName(), teacher.getLastName(), teacher.getCode());
+    }
+
+    @Override
+    public List<TeacherDTO> getAll() {
+        return this.teacherRepository.findAllWithEmail();
     }
 }

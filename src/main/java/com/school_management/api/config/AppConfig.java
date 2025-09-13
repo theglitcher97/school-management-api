@@ -31,6 +31,8 @@ public class AppConfig {
         httpSecurity.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/teachers", "/api/v1/teachers/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/teachers/me").hasAnyRole("ADMIN", "TEACHER")
                 .anyRequest().authenticated());
 
         // disables csrf
