@@ -6,8 +6,10 @@ import com.school_management.api.entities.User;
 import com.school_management.api.repositories.TeacherRepository;
 import com.school_management.api.services.interfaces.TeacherService;
 import com.school_management.api.utils.AppUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,11 +35,24 @@ public class TeacherServiceImpl implements TeacherService {
                         .build();
 
         teacher = this.teacherRepository.save(teacher);
-        return new TeacherDTO(user.getUsername(), teacher.getFirstName(), teacher.getLastName(), teacher.getCode());
+        return new TeacherDTO(user.getId(), user.getUsername(), teacher.getFirstName(), teacher.getLastName(), teacher.getCode());
     }
 
     @Override
     public List<TeacherDTO> getAll() {
         return this.teacherRepository.findAllWithEmail();
+    }
+
+    @Override
+    public TeacherDTO getBydId(Long teacherId) {
+        return this.teacherRepository.findByIdWithEmail(teacherId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id "+teacherId+" not found"));
+
+    }
+
+    @Override
+    public TeacherDTO getCurrentTeacherInfo() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return this.teacherRepository.findByIdWithEmail(user.getId()).get();
     }
 }

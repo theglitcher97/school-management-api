@@ -31,8 +31,8 @@ public class AppConfig {
         httpSecurity.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/teachers", "/api/v1/teachers/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/teachers/me").hasAnyRole("ADMIN", "TEACHER")
+                .requestMatchers("/api/v1/teachers/me").hasAnyRole( "TEACHER") // only TEACHER role can access
+                .requestMatchers("/api/v1/teachers", "/api/v1/teachers/**").hasRole("ADMIN") // ADMIN can access any other "/teachers" path except "/teachers/me
                 .anyRequest().authenticated());
 
         // disables csrf

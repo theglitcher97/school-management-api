@@ -9,4 +9,8 @@ public interface TeacherService {
     TeacherDTO createTeacher(String firstName, String lastName, User newAccount);
 
     List<TeacherDTO> getAll();
+
+    TeacherDTO getBydId(Long teacherId);
+
+    TeacherDTO getCurrentTeacherInfo();
 }
