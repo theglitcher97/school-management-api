@@ -9,6 +9,8 @@ import com.school_management.api.utils.AppUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +22,15 @@ import java.util.Objects;
 public class StudentServiceImpl implements StudentService {
     private final String INIT_CODE = "S0000001";
     private final StudentRepository studentRepository;
+    private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     @Override
     @Transactional
     public StudentDTO createStudent(String firstName, String lastName, User user) {
+        logger.info("Getting latest student code");
         String latestStudentCode = this.studentRepository.getLatestStudentCode();
+
+        logger.info("Creating student instance");
         Student student =
                 Student.builder()
                         .firstName(firstName)
@@ -33,7 +39,10 @@ public class StudentServiceImpl implements StudentService {
                         .user(user)
                         .build();
 
+        logger.info("Saving student with code {}", student.getCode());
         student = this.studentRepository.save(student);
+
+        logger.info("Returning student dto after saving student");
         return new StudentDTO(student.getId(), user.getUsername(), student.getFirstName(), student.getLastName(), student.getCode());
     }
 
