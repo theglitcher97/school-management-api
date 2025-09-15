@@ -33,11 +33,12 @@ public class AppConfig {
                 .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/teachers/me").hasAnyRole( "TEACHER") // only TEACHER role can access
                 .requestMatchers("/api/v1/teachers", "/api/v1/teachers/**").hasRole("ADMIN") // ADMIN can access any other "/teachers" path except "/teachers/me
-                .requestMatchers("/api/v1/students/me").hasAnyRole( "STUDENT") // only STUDENT role can access
+                .requestMatchers("/api/v1/students/me").hasRole( "STUDENT") // only STUDENT role can access
                 .requestMatchers("/api/v1/students", "/api/v1/students/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
+                .requestMatchers("/api/v1/courses", "/api/v1/courses/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
                 .anyRequest().authenticated());
 
-        // disables csrf
+        // disables csrfvb
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         // cors configuration

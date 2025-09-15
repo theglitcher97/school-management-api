@@ -27,7 +27,5 @@ public class Enrollment {
 
     @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Grade> grades;
-
-    private String status;
 }
 
