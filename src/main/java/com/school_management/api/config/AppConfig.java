@@ -36,6 +36,7 @@ public class AppConfig {
                 .requestMatchers("/api/v1/students/me").hasRole( "STUDENT") // only STUDENT role can access
                 .requestMatchers("/api/v1/students", "/api/v1/students/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
                 .requestMatchers("/api/v1/courses", "/api/v1/courses/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
+                .requestMatchers("/api/v1/enrollment", "/api/v1/enrollment/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
                 .anyRequest().authenticated());
 
         // disables csrfvb

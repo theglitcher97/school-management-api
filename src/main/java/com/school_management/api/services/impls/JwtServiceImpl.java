@@ -24,7 +24,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${SECRET_KEY}")
     private String SECRET_KEY;
-    private final Long EXP_TIME = 1000 * 60L * 15; // fifteen minutes
+    private final Long EXP_TIME = 1000 * 60L * 30 ; // 30 minutes
 
 
     /**
