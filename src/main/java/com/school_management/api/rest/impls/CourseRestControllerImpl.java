@@ -1,6 +1,7 @@
 package com.school_management.api.rest.impls;
 
 import com.school_management.api.dto.CourseDTO;
+import com.school_management.api.dto.CourseStudentsDTO;
 import com.school_management.api.dto.CreateCourseDTO;
 import com.school_management.api.rest.interfaces.CourseRestController;
 import com.school_management.api.services.interfaces.CourseService;
@@ -34,6 +35,11 @@ public class CourseRestControllerImpl implements CourseRestController {
     public ResponseEntity<CourseDTO> getCourseById(Long courseId) {
         logger.info("Endpoint: getCourseById + id [{}]", courseId);
         return new ResponseEntity<>(this.courseService.getCourseById(courseId), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<CourseStudentsDTO> getCourseStudents(Long courseId) {
+        return new ResponseEntity<>(this.courseService.getCourseWithStudents(courseId), HttpStatus.OK);
     }
 
     @Override

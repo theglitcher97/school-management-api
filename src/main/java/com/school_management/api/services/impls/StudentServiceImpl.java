@@ -62,4 +62,14 @@ public class StudentServiceImpl implements StudentService {
         return this.studentRepository.findByIdWithEmail(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with id "+studentId+" not found"));
     }
+
+    @Override
+    public StudentDTO entityToDTO(Student student) {
+        return StudentDTO.builder()
+                .id(student.getId())
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .code(student.getCode())
+                .build();
+    }
 }
