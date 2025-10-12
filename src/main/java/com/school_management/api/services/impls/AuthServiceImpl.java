@@ -8,6 +8,7 @@ import com.school_management.api.services.interfaces.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     @Override
-    public String login(LoginDTO loginDTO) {
+    public String login(LoginDTO loginDTO) throws AuthenticationException {
         // validate that the email and password are correct, if not throws an exception
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
         User user = this.userRepository.findByUsername(loginDTO.getEmail()).get();
