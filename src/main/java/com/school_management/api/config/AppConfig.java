@@ -30,6 +30,7 @@ public class AppConfig {
         // Defines which roles has access to which endpoints
         httpSecurity.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/users/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/teachers/me").hasAnyRole( "TEACHER") // only TEACHER role can access
                 .requestMatchers("/api/v1/teachers", "/api/v1/teachers/**").hasRole("ADMIN") // ADMIN can access any other "/teachers" path except "/teachers/me

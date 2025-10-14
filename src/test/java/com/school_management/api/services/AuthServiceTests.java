@@ -38,13 +38,14 @@ public class AuthServiceTests {
     void shouldReturnUserToken() {
         // Arrange
         User user = User.builder().id(1L).username("test@gmail.com").password("password").active(true).role("STUDENT").build();
+        LoginDTO loginDTO = new LoginDTO("test@gmail.com", "password");
+        String token = this.authService.login(loginDTO);
+
+        // Act
         when(authenticationManager.authenticate(any())).thenReturn(null);
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(any(), any())).thenReturn("generated_token");
 
-        // Act
-        LoginDTO loginDTO = new LoginDTO("test@gmail.com", "password");
-        String token = this.authService.login(loginDTO);
 
         // Assert
         assertEquals("generated_token", token);
@@ -53,10 +54,10 @@ public class AuthServiceTests {
     @Test
     void shouldReturnAnExceptionIfEmailOrPasswordIsWrong(){
         // Arrange
-        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("email or password incorrect"));
+        LoginDTO loginDTO = new LoginDTO("test@gmail.com", "password");
 
         // Act
-        LoginDTO loginDTO = new LoginDTO("test@gmail.com", "password");
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("email or password incorrect"));
 
         // Assert
         AuthenticationException ex = assertThrows(AuthenticationException.class, () -> this.authService.login(loginDTO));

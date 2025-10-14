@@ -1,7 +1,7 @@
 package com.school_management.api.services.impls;
 
-import com.school_management.api.dto.AccountCreatedDTO;
-import com.school_management.api.dto.CreateUserAccountDTO;
+import com.school_management.api.dto.*;
+import com.school_management.api.entities.Teacher;
 import com.school_management.api.entities.User;
 import com.school_management.api.enums.USER_ROLE;
 import com.school_management.api.enums.USER_TYPE;
@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -76,5 +77,29 @@ public class UsersServiceImpl implements UsersService {
         user.setPassword(this.passwordEncoder.encode(newPassword));
         this.userRepository.save(user);
         return newPassword;
+    }
+
+    @Override
+    public UserInfoDTO getCurrentUserInfo() {
+        User user = this.getCurrentUser();
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setEmail(user.getUsername());
+        userInfoDTO.setRole(user.getRole().split("_")[1]); // ROLE_X -> X
+
+        if (user.getRole().equals(USER_ROLE.TEACHER.getValue())) {
+            TeacherDTO teacher = this.teacherService.getBydId(user.getId());
+            userInfoDTO.setFirstName(teacher.getFirstName());
+            userInfoDTO.setLastName(teacher.getLastName());
+        } else if (user.getRole().equals(USER_ROLE.STUDENT.getValue())){
+            StudentDTO student = this.studentService.getBydId(user.getId());
+            userInfoDTO.setFirstName(student.getFirstName());
+            userInfoDTO.setLastName(student.getLastName());
+        }
+
+        return userInfoDTO;
+    }
+
+    public User getCurrentUser(){
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
