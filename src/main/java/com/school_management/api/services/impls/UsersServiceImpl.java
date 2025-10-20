@@ -33,7 +33,7 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     @Transactional
-    public ResponseEntity<AccountCreatedDTO> createAccount(CreateUserAccountDTO accountDTO) {
+    public AccountCreatedDTO createAccount(CreateUserAccountDTO accountDTO) {
 
         this.userRepository.findByUsername(accountDTO.getEmail())
                 .ifPresent((user) -> { throw new EntityExistsException("This email already exists");
@@ -62,8 +62,7 @@ public class UsersServiceImpl implements UsersService {
         }
 
         // todo: send credential to user by email
-        AccountCreatedDTO accountCreatedDTO = new AccountCreatedDTO(accountDTO.getEmail(), generatedPassword, code);
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountCreatedDTO);
+        return new AccountCreatedDTO(accountDTO.getEmail(), generatedPassword, code);
     }
 
     @Override

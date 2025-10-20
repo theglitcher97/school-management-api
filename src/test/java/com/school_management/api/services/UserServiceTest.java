@@ -31,6 +31,11 @@ public class UserServiceTest extends SecurityContextHelper {
     private UsersServiceImpl usersService;
 
     @Test
+    public void shouldCreateAccountHappyPath(){
+
+    }
+
+    @Test
     public void shouldReturnUserInfoByIdIfExists(){
         // Arrange
         User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.STUDENT.getValue()).build();

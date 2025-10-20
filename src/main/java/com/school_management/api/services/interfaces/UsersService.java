@@ -7,7 +7,7 @@ import com.school_management.api.entities.User;
 import org.springframework.http.ResponseEntity;
 
 public interface UsersService {
-    ResponseEntity<AccountCreatedDTO> createAccount(CreateUserAccountDTO accountDTO);
+    AccountCreatedDTO createAccount(CreateUserAccountDTO accountDTO);
 
     String resetPassword(Long userId);
 

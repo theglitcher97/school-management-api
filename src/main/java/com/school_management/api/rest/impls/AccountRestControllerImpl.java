@@ -18,7 +18,7 @@ public class AccountRestControllerImpl implements AccountRestController {
 
     @Override
     public ResponseEntity<AccountCreatedDTO> createUserAccount(CreateUserAccountDTO accountDTO) {
-        return this.usersService.createAccount(accountDTO);
+        return new ResponseEntity<>(this.usersService.createAccount(accountDTO), HttpStatus.CREATED);
     }
 
     @Override
