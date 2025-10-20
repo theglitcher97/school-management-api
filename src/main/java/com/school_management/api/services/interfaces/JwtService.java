@@ -12,4 +12,5 @@ public interface JwtService {
     String encryptPassword(String password);
     String extractEmail(String token);
     String generateToken(Map<String, Object> extraClaims, UserDetails userDetails);
+    String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Long expTimeInMinutes);
 }

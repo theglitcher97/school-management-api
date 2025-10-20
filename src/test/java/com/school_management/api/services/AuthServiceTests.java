@@ -1,5 +1,6 @@
 package com.school_management.api.services;
 
+import com.school_management.api.dto.LoginCredentialsDTO;
 import com.school_management.api.dto.LoginDTO;
 import com.school_management.api.entities.User;
 import com.school_management.api.repositories.UserRepository;
@@ -39,16 +40,16 @@ public class AuthServiceTests {
         // Arrange
         User user = User.builder().id(1L).username("test@gmail.com").password("password").active(true).role("STUDENT").build();
         LoginDTO loginDTO = new LoginDTO("test@gmail.com", "password");
-        String token = this.authService.login(loginDTO);
 
         // Act
         when(authenticationManager.authenticate(any())).thenReturn(null);
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(any(), any())).thenReturn("generated_token");
+        when(jwtService.generateToken(any(), any(), any())).thenReturn("generated_token");
+        LoginCredentialsDTO login = this.authService.login(loginDTO);
 
 
         // Assert
-        assertEquals("generated_token", token);
+        assertEquals("generated_token", login.getToken());
     }
 
     @Test

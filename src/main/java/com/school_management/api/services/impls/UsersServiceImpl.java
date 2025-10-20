@@ -99,6 +99,7 @@ public class UsersServiceImpl implements UsersService {
         return userInfoDTO;
     }
 
+    @Override
     public User getCurrentUser(){
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }

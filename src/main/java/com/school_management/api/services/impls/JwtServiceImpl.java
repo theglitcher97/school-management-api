@@ -24,7 +24,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${SECRET_KEY}")
     private String SECRET_KEY;
-    private final Long EXP_TIME = 1000 * 60L * 30 ; // 30 minutes
+    private final Long EXP_TIME = 1000 * 60L * 30 ; // 1000ms * 1m * 30m = 30 minutes
 
 
     /**
@@ -34,14 +34,20 @@ public class JwtServiceImpl implements JwtService {
      */
 //    @Override
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
-                .claims(Objects.isNull(extraClaims) ? Map.of() : extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXP_TIME))
-                .signWith(this.getSigningKey())
-                .compact();
+        return this.generateToken(extraClaims, userDetails, EXP_TIME);
     }
+
+    @Override
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Long expTime) {
+        return Jwts.builder()
+            .claims(Objects.isNull(extraClaims) ? Map.of() : extraClaims)
+            .subject(userDetails.getUsername())
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + expTime))
+            .signWith(this.getSigningKey())
+            .compact();
+    }
+
 
     /**
      * @param token 
