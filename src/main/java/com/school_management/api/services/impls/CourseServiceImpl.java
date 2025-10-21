@@ -6,11 +6,16 @@ import com.school_management.api.dto.CreateCourseDTO;
 import com.school_management.api.dto.StudentDTO;
 import com.school_management.api.entities.Course;
 import com.school_management.api.entities.Teacher;
+import com.school_management.api.entities.User;
+import com.school_management.api.enums.USER_ROLE;
+import com.school_management.api.policies.CourseAccessPolicy;
+import com.school_management.api.policies.UserAccessPolicy;
 import com.school_management.api.repositories.CourseRepository;
 import com.school_management.api.repositories.TeacherRepository;
 import com.school_management.api.services.interfaces.CourseService;
 import com.school_management.api.services.interfaces.StudentService;
 import com.school_management.api.services.interfaces.TeacherService;
+import com.school_management.api.utils.CurrentUserProvider;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -18,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,12 +37,15 @@ public class CourseServiceImpl implements CourseService {
     private final TeacherRepository teacherRepository;
     private final TeacherService teacherService;
     private final StudentService studentService;
+    private final CurrentUserProvider currentUserProvider;
 
 
     @Override
     @Transactional
     public CourseDTO createCourse(CreateCourseDTO createCourseDTO) {
         logger.info("Starting process to create a new course");
+        User user = this.currentUserProvider.getCurrentUser();
+        UserAccessPolicy.assertCanCreateCourse(user);
 
         logger.info("Searching for teacher with id {}",createCourseDTO.getTeacherId());
         Teacher teacher = this.teacherRepository.findById(createCourseDTO.getTeacherId()).orElseThrow(() -> {
@@ -69,8 +78,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDTO> getCourses() {
-        return this.courseRepository.findAll().stream()
+    public List<CourseDTO> getCoursesForUser(User user) throws AccessDeniedException {
+        if(!CourseAccessPolicy.canReadCourses(user))
+            throw new AccessDeniedException("Not allow");
+
+        List<Course> courses;
+        switch (USER_ROLE.valueOf(user.getRole())) {
+            case ROLE_STUDENT -> courses = this.courseRepository.findByStudentId(user.getId());
+            case ROLE_TEACHER -> courses = this.courseRepository.findByTeacherId(user.getId());
+            default -> courses = this.courseRepository.findAll();
+        }
+
+        return courses.stream()
                 .map(this::mapEntityToDTO)
                 .toList();
     }

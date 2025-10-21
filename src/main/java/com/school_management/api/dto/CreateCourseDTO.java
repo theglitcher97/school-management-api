@@ -11,6 +11,7 @@ public class CreateCourseDTO {
     @Size(max = 255)
     private String name;
     private String description;
+    @NotNull
     private Long teacherId;
 
 }

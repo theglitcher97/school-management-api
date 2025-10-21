@@ -3,8 +3,10 @@ package com.school_management.api.rest.impls;
 import com.school_management.api.dto.CourseDTO;
 import com.school_management.api.dto.CourseStudentsDTO;
 import com.school_management.api.dto.CreateCourseDTO;
+import com.school_management.api.entities.User;
 import com.school_management.api.rest.interfaces.CourseRestController;
 import com.school_management.api.services.interfaces.CourseService;
+import com.school_management.api.utils.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -27,8 +30,8 @@ public class CourseRestControllerImpl implements CourseRestController {
     }
 
     @Override
-    public ResponseEntity<List<CourseDTO>> getCourses() {
-        return new ResponseEntity<>(this.courseService.getCourses(), HttpStatus.OK);
+    public ResponseEntity<List<CourseDTO>> getCourses(@CurrentUser User user) throws AccessDeniedException {
+        return new ResponseEntity<>(this.courseService.getCoursesForUser(user), HttpStatus.OK);
     }
 
     @Override

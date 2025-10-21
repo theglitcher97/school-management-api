@@ -1,5 +1,6 @@
 package com.school_management.api.config;
 
+import com.school_management.api.enums.USER_TYPE;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,20 +28,21 @@ public class AppConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        // Defines which roles has access to which endpoints
+        String ADMIN = USER_TYPE.ADMIN.getValue();
+        String TEACHER = USER_TYPE.TEACHER.getValue();
+        String STUDENT = USER_TYPE.STUDENT.getValue();
+
+        // Defines what ROLE can access which resource, not what data can see
         httpSecurity.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/v1/users/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
-                .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/teachers/me").hasAnyRole( "TEACHER") // only TEACHER role can access
-                .requestMatchers("/api/v1/teachers", "/api/v1/teachers/**").hasRole("ADMIN") // ADMIN can access any other "/teachers" path except "/teachers/me
-                .requestMatchers("/api/v1/students/me").hasRole( "STUDENT") // only STUDENT role can access
-                .requestMatchers("/api/v1/students", "/api/v1/students/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
-                .requestMatchers("/api/v1/courses", "/api/v1/courses/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
-                .requestMatchers("/api/v1/enrollment", "/api/v1/enrollment/**").hasRole("ADMIN") // ADMIN can access any other "/students" path except "/students/me
+                .requestMatchers("/api/v1/users/**").hasAnyRole(ADMIN, TEACHER, STUDENT)
+                .requestMatchers("/api/v1/teachers/**").hasAnyRole(ADMIN, TEACHER)
+                .requestMatchers("/api/v1/students/**").hasRole(ADMIN)
+                .requestMatchers("/api/v1/courses/**").hasAnyRole(ADMIN, TEACHER, STUDENT)
+                .requestMatchers("/api/v1/enrollment/**").hasRole(ADMIN)
                 .anyRequest().authenticated());
 
-        // disables csrfvb
+        // disables csrf
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         // cors configuration

@@ -3,7 +3,9 @@ package com.school_management.api.services.interfaces;
 import com.school_management.api.dto.CourseDTO;
 import com.school_management.api.dto.CourseStudentsDTO;
 import com.school_management.api.dto.CreateCourseDTO;
+import com.school_management.api.entities.User;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface CourseService {
@@ -11,7 +13,7 @@ public interface CourseService {
 
     CourseDTO getCourseById(Long courseId);
 
-    List<CourseDTO> getCourses();
+    List<CourseDTO> getCoursesForUser(User user) throws AccessDeniedException;
 
     void removeCourse(Long courseId);
 

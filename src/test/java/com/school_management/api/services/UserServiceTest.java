@@ -9,6 +9,7 @@ import com.school_management.api.services.helper.SecurityContextHelper;
 import com.school_management.api.services.impls.UsersServiceImpl;
 import com.school_management.api.services.interfaces.StudentService;
 import com.school_management.api.services.interfaces.TeacherService;
+import com.school_management.api.utils.CurrentUserProvider;
 import com.school_management.api.utils.PasswordGenerator;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,6 +48,9 @@ public class UserServiceTest extends SecurityContextHelper {
     @Mock
     private PasswordGenerator passwordGenerator;
 
+    @Mock
+    private CurrentUserProvider currentUserProvider;
+
     @Test
     public void shouldCreateStudentAccountHappyPath(){
         // Arrange
@@ -58,6 +62,7 @@ public class UserServiceTest extends SecurityContextHelper {
                 .build();
 
         // Act
+        when(this.currentUserProvider.getCurrentUser()).thenReturn(this.getDefaultAdminUser());
         when(this.userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
         when(this.passwordGenerator.generatePassword(anyInt())).thenReturn("password_generated");
         when(this.passwordEncoder.encode(anyString())).thenReturn("password_encoded");
@@ -67,6 +72,13 @@ public class UserServiceTest extends SecurityContextHelper {
         AccountCreatedDTO accountCreatedDTO = this.usersService.createAccount(newAccount);
         assertEquals("S00001", accountCreatedDTO.getCode());
         verify(this.studentService, atLeastOnce()).createStudent(anyString(), anyString(), any(User.class));
+    }
+
+    private User getDefaultAdminUser() {
+        return User.builder()
+                .id(1L)
+                .role(USER_ROLE.ROLE_ADMIN.getValue())
+                .build();
     }
 
     @Test
@@ -80,6 +92,7 @@ public class UserServiceTest extends SecurityContextHelper {
                 .build();
 
         // Act
+        when(this.currentUserProvider.getCurrentUser()).thenReturn(this.getDefaultAdminUser());
         when(this.userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
         when(this.passwordGenerator.generatePassword(anyInt())).thenReturn("password_generated");
         when(this.passwordEncoder.encode(anyString())).thenReturn("password_encoded");
@@ -102,6 +115,7 @@ public class UserServiceTest extends SecurityContextHelper {
                 .build();
 
         // Act
+        when(this.currentUserProvider.getCurrentUser()).thenReturn(this.getDefaultAdminUser());
         when(this.userRepository.findByUsername(anyString())).thenThrow(new EntityExistsException("This email already exists"));
         EntityExistsException exception = assertThrows(EntityExistsException.class, () -> this.usersService.createAccount(newAccount));
         assertEquals("This email already exists", exception.getMessage());
@@ -110,11 +124,12 @@ public class UserServiceTest extends SecurityContextHelper {
     @Test
     public void shouldReturnUserStudentInfoByIdIfExists(){
         // Arrange
-        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.STUDENT.getValue()).build();
+        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.ROLE_STUDENT.getValue()).build();
         StudentDTO student = StudentDTO.builder().firstName("John").lastName("Doe").id(1L).build();
-        mockSecurityContextUser(user);
+//        mockSecurityContextUser(user);
 
         // Act
+        when(this.currentUserProvider.getCurrentUser()).thenReturn(user);
         when(this.studentService.getBydId(anyLong())).thenReturn(student);
         UserInfoDTO userInfoDTO = this.usersService.getCurrentUserInfo();
 
@@ -126,12 +141,13 @@ public class UserServiceTest extends SecurityContextHelper {
     @Test
     public void shouldReturnUserTeacherInfoByIdIfExists(){
         // Arrange
-        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.TEACHER.getValue()).build();
+        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.ROLE_TEACHER.getValue()).build();
         TeacherDTO teacher = TeacherDTO.builder().firstName("John").lastName("Doe").id(1L).build();
-        mockSecurityContextUser(user);
+//        mockSecurityContextUser(user);
 
         // Act
         when(this.teacherService.getBydId(anyLong())).thenReturn(teacher);
+        when(this.currentUserProvider.getCurrentUser()).thenReturn(user);
         UserInfoDTO userInfoDTO = this.usersService.getCurrentUserInfo();
 
         // assess
@@ -143,9 +159,10 @@ public class UserServiceTest extends SecurityContextHelper {
     public void shouldReturnUserAdminInfoByIdIfExists(){
         // Arrange
         User user = User.builder().id(1L).username("test@gmail.com").role("ROLE_ADMIN").build();
-        mockSecurityContextUser(user);
+//        mockSecurityContextUser(user);
 
         // Act
+        when(this.currentUserProvider.getCurrentUser()).thenReturn(user);
         UserInfoDTO userInfoDTO = this.usersService.getCurrentUserInfo();
 
         // assess
@@ -157,7 +174,7 @@ public class UserServiceTest extends SecurityContextHelper {
     @Test
     public void shouldResetPasswordIfUserExists(){
         // Arrange
-        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.TEACHER.getValue()).build();
+        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.ROLE_TEACHER.getValue()).build();
 
         // Act
         when(this.userRepository.findById(anyLong())).thenReturn(Optional.of(user));
@@ -175,7 +192,7 @@ public class UserServiceTest extends SecurityContextHelper {
     @Test
     public void shouldResetPasswordFailsIfUserDoesNotExists(){
         // Arrange
-        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.TEACHER.getValue()).build();
+        User user = User.builder().id(1L).username("test@gmail.com").role(USER_ROLE.ROLE_TEACHER.getValue()).build();
 
         // Act
         when(this.userRepository.findById(anyLong())).thenReturn(Optional.empty());
