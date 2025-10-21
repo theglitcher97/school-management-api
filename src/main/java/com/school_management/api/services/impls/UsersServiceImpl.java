@@ -84,6 +84,8 @@ public class UsersServiceImpl implements UsersService {
         UserInfoDTO userInfoDTO = new UserInfoDTO();
         userInfoDTO.setEmail(user.getUsername());
         userInfoDTO.setRole(user.getRole().split("_")[1]); // ROLE_X -> X
+        userInfoDTO.setFirstName("John");
+        userInfoDTO.setLastName("Doe");
 
         if (user.getRole().equals(USER_ROLE.TEACHER.getValue())) {
             TeacherDTO teacher = this.teacherService.getBydId(user.getId());
