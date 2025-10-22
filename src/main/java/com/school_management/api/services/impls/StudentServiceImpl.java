@@ -3,9 +3,11 @@ package com.school_management.api.services.impls;
 import com.school_management.api.dto.StudentDTO;
 import com.school_management.api.entities.Student;
 import com.school_management.api.entities.User;
+import com.school_management.api.policies.UserAccessPolicy;
 import com.school_management.api.repositories.StudentRepository;
 import com.school_management.api.services.interfaces.StudentService;
 import com.school_management.api.utils.AppUtils;
+import com.school_management.api.utils.CurrentUserProvider;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,8 @@ public class StudentServiceImpl implements StudentService {
     private final String INIT_CODE = "S0000001";
     private final StudentRepository studentRepository;
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
+    private final UserAccessPolicy userAccessPolicy;
+    private final CurrentUserProvider currentUserProvider;
 
     @Override
     @Transactional
@@ -52,13 +56,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO getCurrentStudentInfo() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return this.studentRepository.findByIdWithEmail(user.getId()).get();
-    }
-
-    @Override
     public StudentDTO getBydId(Long studentId) {
+        this.userAccessPolicy.assertCanReadStudent(this.currentUserProvider.getCurrentUser());
         return this.studentRepository.findByIdWithEmail(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with id "+studentId+" not found"));
     }

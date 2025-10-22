@@ -4,10 +4,12 @@ import com.school_management.api.dto.PostEnrollDTO;
 import com.school_management.api.entities.Course;
 import com.school_management.api.entities.Enrollment;
 import com.school_management.api.entities.Student;
+import com.school_management.api.policies.UserAccessPolicy;
 import com.school_management.api.repositories.CourseRepository;
 import com.school_management.api.repositories.EnrollmentRepository;
 import com.school_management.api.repositories.StudentRepository;
 import com.school_management.api.services.interfaces.EnrollmentService;
+import com.school_management.api.utils.CurrentUserProvider;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -22,10 +24,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final EnrollmentRepository enrollmentRepository;
-
+    private final UserAccessPolicy userAccessPolicy;
+    private final CurrentUserProvider currentUserProvider;
     @Override
     @Transactional
     public void enroll(PostEnrollDTO postEnrollDTO) {
+        this.userAccessPolicy.assertCanCreateEnroll(this.currentUserProvider.getCurrentUser());
+
         logger.info("Fetching course with ID {}", postEnrollDTO.getCourseId());
         Course course = this.courseRepository.findById(postEnrollDTO.getCourseId())
                 .orElseThrow(() -> {

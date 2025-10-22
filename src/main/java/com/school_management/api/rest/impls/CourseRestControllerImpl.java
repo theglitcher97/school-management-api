@@ -30,7 +30,7 @@ public class CourseRestControllerImpl implements CourseRestController {
     }
 
     @Override
-    public ResponseEntity<List<CourseDTO>> getCourses(@CurrentUser User user) throws AccessDeniedException {
+    public ResponseEntity<List<CourseDTO>> getCourses(@CurrentUser User user) {
         return new ResponseEntity<>(this.courseService.getCoursesForUser(user), HttpStatus.OK);
     }
 

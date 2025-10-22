@@ -17,7 +17,7 @@ public interface CourseRestController {
     ResponseEntity<CourseDTO> createCourse(@Validated @RequestBody CreateCourseDTO createCourseDTO);
 
     @GetMapping
-    ResponseEntity<List<CourseDTO>> getCourses(User user) throws AccessDeniedException;
+    ResponseEntity<List<CourseDTO>> getCourses(User user);
 
     @GetMapping("/{courseId}")
     ResponseEntity<CourseDTO> getCourseById(@PathVariable Long courseId);

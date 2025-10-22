@@ -13,13 +13,6 @@ public interface TeacherRestController {
     @GetMapping
     ResponseEntity<List<TeacherDTO>> getAllTeachers();
 
-    /**
-     * todo: remove
-     * @deprecated should call /api/v1/users/me
-     * */
-    @GetMapping("/me")
-    ResponseEntity<TeacherDTO> getCurrentLoggedInTeacher();
-
     @GetMapping("/{teacherId}")
     ResponseEntity<TeacherDTO> getTeacherByID(@PathVariable Long teacherId);
 }

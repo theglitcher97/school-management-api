@@ -38,6 +38,7 @@ public class CourseServiceImpl implements CourseService {
     private final TeacherService teacherService;
     private final StudentService studentService;
     private final CurrentUserProvider currentUserProvider;
+    private final UserAccessPolicy userAccessPolicy;
 
 
     @Override
@@ -68,20 +69,20 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO getCourseById(Long courseId) {
+        User user = this.currentUserProvider.getCurrentUser();
         logger.info("Searching for Course with id {}", courseId);
         Course course = this.courseRepository.findById(courseId).orElseThrow(() -> {
             logger.error("Course with id {} not found", courseId);
             return new EntityNotFoundException("Course not found");
         });
 
+        this.userAccessPolicy.assertCanReadCourse(user, course);
+
         return new CourseDTO(course.getId(), course.getName(), course.getDescription(), this.teacherService.getBydId(course.getTeacher().getId()));
     }
 
     @Override
-    public List<CourseDTO> getCoursesForUser(User user) throws AccessDeniedException {
-        if(!CourseAccessPolicy.canReadCourses(user))
-            throw new AccessDeniedException("Not allow");
-
+    public List<CourseDTO> getCoursesForUser(User user) {
         List<Course> courses;
         switch (USER_ROLE.valueOf(user.getRole())) {
             case ROLE_STUDENT -> courses = this.courseRepository.findByStudentId(user.getId());

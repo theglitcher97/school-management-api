@@ -11,8 +11,6 @@ public interface StudentService {
 
     List<StudentDTO> getAll();
 
-    StudentDTO getCurrentStudentInfo();
-
     StudentDTO getBydId(Long studentId);
 
     StudentDTO entityToDTO(Student student);

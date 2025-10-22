@@ -21,11 +21,6 @@ public class StudentRestControllerImpl implements StudentRestController {
     }
 
     @Override
-    public ResponseEntity<StudentDTO> getCurrentLoggedInStudent() {
-        return new ResponseEntity<StudentDTO>(this.studentService.getCurrentStudentInfo(), HttpStatus.OK);
-    }
-
-    @Override
     public ResponseEntity<StudentDTO> getStudentByID(Long studentId) {
         return new ResponseEntity<StudentDTO>(this.studentService.getBydId(studentId), HttpStatus.OK);
     }

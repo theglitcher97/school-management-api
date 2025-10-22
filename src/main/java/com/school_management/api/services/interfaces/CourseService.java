@@ -13,7 +13,7 @@ public interface CourseService {
 
     CourseDTO getCourseById(Long courseId);
 
-    List<CourseDTO> getCoursesForUser(User user) throws AccessDeniedException;
+    List<CourseDTO> getCoursesForUser(User user);
 
     void removeCourse(Long courseId);
 

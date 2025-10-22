@@ -13,10 +13,6 @@ public interface StudentRestController {
     @GetMapping
     ResponseEntity<List<StudentDTO>> getAllStudents();
 
-    // return current teacher info
-    @GetMapping("/me")
-    ResponseEntity<StudentDTO> getCurrentLoggedInStudent();
-
     @GetMapping("/{studentId}")
     ResponseEntity<StudentDTO> getStudentByID(@PathVariable Long studentId);
 }

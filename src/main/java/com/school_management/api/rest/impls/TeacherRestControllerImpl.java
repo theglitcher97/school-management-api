@@ -21,11 +21,6 @@ public class TeacherRestControllerImpl implements TeacherRestController {
     }
 
     @Override
-    public ResponseEntity<TeacherDTO> getCurrentLoggedInTeacher() {
-        return new ResponseEntity<TeacherDTO>(this.teacherService.getCurrentTeacherInfo(), HttpStatus.OK);
-    }
-
-    @Override
     public ResponseEntity<TeacherDTO> getTeacherByID(Long teacherId) {
         return new ResponseEntity<TeacherDTO>(this.teacherService.getBydId(teacherId), HttpStatus.OK);
     }

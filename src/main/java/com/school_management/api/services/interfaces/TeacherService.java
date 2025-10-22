@@ -11,6 +11,4 @@ public interface TeacherService {
     List<TeacherDTO> getAll();
 
     TeacherDTO getBydId(Long teacherId);
-
-    TeacherDTO getCurrentTeacherInfo();
 }

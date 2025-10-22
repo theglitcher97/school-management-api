@@ -9,7 +9,6 @@ import com.school_management.api.utils.AppUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,12 +46,5 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherDTO getBydId(Long teacherId) {
         return this.teacherRepository.findByIdWithEmail(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher with id "+teacherId+" not found"));
-
-    }
-
-    @Override
-    public TeacherDTO getCurrentTeacherInfo() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return this.teacherRepository.findByIdWithEmail(user.getId()).get();
     }
 }

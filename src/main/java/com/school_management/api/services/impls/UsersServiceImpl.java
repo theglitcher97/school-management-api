@@ -97,6 +97,7 @@ public class UsersServiceImpl implements UsersService {
     public UserInfoDTO getCurrentUserInfo() {
         User user = this.currentUserProvider.getCurrentUser();
         UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setId(user.getId());
         userInfoDTO.setEmail(user.getUsername());
         userInfoDTO.setRole(user.getRole().split("_")[1]); // ROLE_X -> X
         userInfoDTO.setFirstName("John");
@@ -106,10 +107,12 @@ public class UsersServiceImpl implements UsersService {
             TeacherDTO teacher = this.teacherService.getBydId(user.getId());
             userInfoDTO.setFirstName(teacher.getFirstName());
             userInfoDTO.setLastName(teacher.getLastName());
+            userInfoDTO.setCode(teacher.getCode());
         } else if (user.getRole().equals(USER_ROLE.ROLE_STUDENT.getValue())) {
             StudentDTO student = this.studentService.getBydId(user.getId());
             userInfoDTO.setFirstName(student.getFirstName());
             userInfoDTO.setLastName(student.getLastName());
+            userInfoDTO.setCode(student.getCode());
         }
 
         return userInfoDTO;
