@@ -3,6 +3,7 @@ package com.school_management.api.rest.impls;
 import com.school_management.api.dto.CourseDTO;
 import com.school_management.api.dto.CourseStudentsDTO;
 import com.school_management.api.dto.CreateCourseDTO;
+import com.school_management.api.dto.StudentDTO;
 import com.school_management.api.entities.User;
 import com.school_management.api.rest.interfaces.CourseRestController;
 import com.school_management.api.services.interfaces.CourseService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -41,7 +43,7 @@ public class CourseRestControllerImpl implements CourseRestController {
     }
 
     @Override
-    public ResponseEntity<CourseStudentsDTO> getCourseStudents(Long courseId) {
+    public ResponseEntity<Set<StudentDTO>> getCourseStudents(Long courseId) {
         return new ResponseEntity<>(this.courseService.getCourseWithStudents(courseId), HttpStatus.OK);
     }
 

@@ -10,6 +10,5 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 public class CourseStudentsDTO {
-    private CourseDTO courseDTO;
-    private Set<StudentDTO> studentDTOS;
+    private Set<StudentDTO> students;
 }

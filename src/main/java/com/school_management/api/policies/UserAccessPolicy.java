@@ -56,4 +56,17 @@ public class UserAccessPolicy {
         if(!isAdmin(user))
             throw new AccessDeniedException("NOT ALLOWED");
     }
+
+    @SneakyThrows
+    public void assertCanReadCourseStudents(User user, Course course) {
+        if (isAdmin(user)) return;
+        if (isTeacher(user) && Objects.equals(course.getTeacher().getId(), user.getId())) return;
+        throw new AccessDeniedException("NOT ALLOWED");
+    }
+
+    @SneakyThrows
+    public void assertCanDeleteCourse(User user) {
+        if(!isAdmin(user))
+            throw new AccessDeniedException("NOT ALLOWED");
+    }
 }

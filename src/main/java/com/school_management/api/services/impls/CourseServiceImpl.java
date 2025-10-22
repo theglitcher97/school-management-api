@@ -98,24 +98,24 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void removeCourse(Long courseId) {
+        this.userAccessPolicy.assertCanDeleteCourse(this.currentUserProvider.getCurrentUser());
         this.courseRepository.findById(courseId)
                 .ifPresent(this.courseRepository::delete);
     }
 
     @Override
-    public CourseStudentsDTO getCourseWithStudents(Long courseId) {
+    public Set<StudentDTO> getCourseWithStudents(Long courseId) {
+        User user = this.currentUserProvider.getCurrentUser();
         Course course = this.courseRepository.findById(courseId).orElseThrow(() -> {
             logger.error("Course with id {} not found", courseId);
             return new EntityNotFoundException("Course not found");
         });
 
-        Set<StudentDTO> studentDTOS = course.getEnrollments().stream()
+        this.userAccessPolicy.assertCanReadCourseStudents(user, course);
+
+        return course.getEnrollments().stream()
                 .map(enrollment -> this.studentService.entityToDTO(enrollment.getStudent()))
                 .collect(Collectors.toSet());
-
-        CourseDTO courseDTO = this.mapEntityToDTO(course);
-
-        return new CourseStudentsDTO(courseDTO, studentDTOS);
     }
 
     private CourseDTO mapEntityToDTO(Course course) {
