@@ -27,6 +27,9 @@ public interface CourseRestController {
     @GetMapping("/{courseId}/students")
     ResponseEntity<Set<StudentDTO>> getCourseStudents(@PathVariable Long courseId);
 
+    @PatchMapping("/{courseId}")
+    ResponseEntity<CourseDTO> patchCourse(@PathVariable Long courseId, @RequestBody CreateCourseDTO patchCourse);
+
     @DeleteMapping("/{courseId}")
     ResponseEntity deleteCourse(@PathVariable Long courseId);
 }

@@ -11,5 +11,5 @@ import java.nio.file.AccessDeniedException;
 public interface UsersService {
     AccountCreatedDTO createAccount(CreateUserAccountDTO accountDTO) throws AccessDeniedException;
     String resetPassword(Long userId);
-    UserInfoDTO getCurrentUserInfo() throws AccessDeniedException;
+    UserInfoDTO getCurrentUserInfo();
 }

@@ -12,7 +12,7 @@ import java.nio.file.AccessDeniedException;
 @RequestMapping("/api/v1/users")
 public interface UserRestController {
     @GetMapping("/me")
-    ResponseEntity<UserInfoDTO> getUserInfo() throws AccessDeniedException;
+    ResponseEntity<UserInfoDTO> getUserInfo();
 
     @PostMapping()
     ResponseEntity<AccountCreatedDTO> createUserAccount(@Validated @RequestBody CreateUserAccountDTO accountDTO) throws AccessDeniedException;

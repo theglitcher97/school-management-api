@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +44,11 @@ public class CourseRestControllerImpl implements CourseRestController {
     @Override
     public ResponseEntity<Set<StudentDTO>> getCourseStudents(Long courseId) {
         return new ResponseEntity<>(this.courseService.getCourseWithStudents(courseId), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<CourseDTO> patchCourse(Long courseId, CreateCourseDTO patchCourse) {
+        return ResponseEntity.ok().body(this.courseService.patchCourse(courseId, patchCourse));
     }
 
     @Override

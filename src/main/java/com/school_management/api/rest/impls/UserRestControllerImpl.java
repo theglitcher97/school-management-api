@@ -22,7 +22,7 @@ public class UserRestControllerImpl implements UserRestController {
     private UsersService usersService;
 
     @Override
-    public ResponseEntity<UserInfoDTO> getUserInfo() throws AccessDeniedException {
+    public ResponseEntity<UserInfoDTO> getUserInfo() {
         UserInfoDTO userInfoDTO = this.usersService.getCurrentUserInfo();
         return ResponseEntity.ok().body(userInfoDTO);
     }

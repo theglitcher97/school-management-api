@@ -20,4 +20,6 @@ public interface CourseService {
     void removeCourse(Long courseId);
 
     Set<StudentDTO> getCourseWithStudents(Long courseId);
+
+    CourseDTO patchCourse(Long courseId, CreateCourseDTO patchCourse);
 }

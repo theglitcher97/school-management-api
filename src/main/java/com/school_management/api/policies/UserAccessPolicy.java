@@ -21,16 +21,13 @@ public class UserAccessPolicy {
         return USER_ROLE.valueOf(user.getRole()).equals(USER_ROLE.ROLE_ADMIN);
     }
 
-    @SneakyThrows
-    public static void assertCanCreateCourse(User user) {
-        if(!isAdmin(user))
-            throw new AccessDeniedException("NOT ALLOWED");
+    public void assertCanCreateCourse(User user) {
+        this.onlyAdminCan(user);
     }
 
-    @SneakyThrows
     public void assertCanCreateEnroll(User user) {
-        if(!isAdmin(user))
-            throw new AccessDeniedException("NOT ALLOWED");
+        this.onlyAdminCan(user);
+
     }
 
     @SneakyThrows
@@ -51,10 +48,8 @@ public class UserAccessPolicy {
         return USER_ROLE.valueOf(user.getRole()).equals(USER_ROLE.ROLE_STUDENT);
     }
 
-    @SneakyThrows
     public void assertCanReadStudent(User user) {
-        if(!isAdmin(user))
-            throw new AccessDeniedException("NOT ALLOWED");
+        this.onlyAdminCan(user);
     }
 
     @SneakyThrows
@@ -64,8 +59,17 @@ public class UserAccessPolicy {
         throw new AccessDeniedException("NOT ALLOWED");
     }
 
-    @SneakyThrows
     public void assertCanDeleteCourse(User user) {
+        this.onlyAdminCan(user);
+
+    }
+
+    public void assertCanPatchCourse(User user) {
+        this.onlyAdminCan(user);
+    }
+
+    @SneakyThrows
+    public void onlyAdminCan(User user){
         if(!isAdmin(user))
             throw new AccessDeniedException("NOT ALLOWED");
     }

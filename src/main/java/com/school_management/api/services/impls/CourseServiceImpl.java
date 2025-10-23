@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO createCourse(CreateCourseDTO createCourseDTO) {
         logger.info("Starting process to create a new course");
         User user = this.currentUserProvider.getCurrentUser();
-        UserAccessPolicy.assertCanCreateCourse(user);
+        this.userAccessPolicy.assertCanCreateCourse(user);
 
         logger.info("Searching for teacher with id {}",createCourseDTO.getTeacherId());
         Teacher teacher = this.teacherRepository.findById(createCourseDTO.getTeacherId()).orElseThrow(() -> {
@@ -118,7 +119,40 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    @Transactional
+    public CourseDTO patchCourse(Long courseId, CreateCourseDTO patchCourse) {
+        logger.info("Checking user authority to patch course");
+        this.userAccessPolicy.assertCanPatchCourse(this.currentUserProvider.getCurrentUser());
+
+        logger.info("fetching course with id {}", courseId);
+        Course course = this.getCourseEntity(courseId);
+
+        logger.info("patching course  information");
+        if (Objects.nonNull(patchCourse.getName()) && !patchCourse.getName().trim().isBlank())
+            course.setName(patchCourse.getName());
+        if (Objects.nonNull(patchCourse.getDescription()) && !patchCourse.getDescription().trim().isBlank())
+            course.setDescription(patchCourse.getDescription());
+
+        if (Objects.nonNull(patchCourse.getTeacherId()) && patchCourse.getTeacherId() != 0) {
+            logger.info("Updating course assigned teacher");
+            if (!this.teacherRepository.existsById(patchCourse.getTeacherId()))
+                throw new EntityNotFoundException("Teacher with ID "+patchCourse.getTeacherId()+" not found");
+            course.setTeacher(this.teacherRepository.getReferenceById(patchCourse.getTeacherId()));
+        }
+
+        this.courseRepository.save(course);
+        return this.mapEntityToDTO(course);
+    }
+
     private CourseDTO mapEntityToDTO(Course course) {
         return new CourseDTO(course.getId(), course.getName(), course.getDescription(), this.teacherService.getBydId(course.getTeacher().getId()));
+    }
+
+    private Course getCourseEntity(Long courseId){
+        return this.courseRepository.findById(courseId).orElseThrow(() -> {
+            logger.error("Course with id {} not found", courseId);
+            return new EntityNotFoundException("Course not found");
+        });
     }
 }
