@@ -1,14 +1,10 @@
 package com.school_management.api.services.impls;
 
-import com.school_management.api.dto.CourseDTO;
-import com.school_management.api.dto.CourseStudentsDTO;
-import com.school_management.api.dto.CreateCourseDTO;
-import com.school_management.api.dto.StudentDTO;
+import com.school_management.api.dto.*;
 import com.school_management.api.entities.Course;
 import com.school_management.api.entities.Teacher;
 import com.school_management.api.entities.User;
 import com.school_management.api.enums.USER_ROLE;
-import com.school_management.api.policies.CourseAccessPolicy;
 import com.school_management.api.policies.UserAccessPolicy;
 import com.school_management.api.repositories.CourseRepository;
 import com.school_management.api.repositories.TeacherRepository;
@@ -21,9 +17,9 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -65,7 +61,7 @@ public class CourseServiceImpl implements CourseService {
         logger.info("Saving new course");
         this.courseRepository.save(course);
 
-        return new CourseDTO(course.getId(), course.getName(), course.getDescription(), this.teacherService.getBydId(teacher.getId()));
+        return this.mapEntityToDTO(course);
     }
 
     @Override
@@ -79,19 +75,31 @@ public class CourseServiceImpl implements CourseService {
 
         this.userAccessPolicy.assertCanReadCourse(user, course);
 
-        return new CourseDTO(course.getId(), course.getName(), course.getDescription(), this.teacherService.getBydId(course.getTeacher().getId()));
+        return this.mapEntityToDTO(course);
     }
 
     @Override
-    public List<CourseDTO> getCoursesForUser(User user) {
+    public List<CourseDTO> getCoursesForUser(User user, SpecificationDTO specificationDTO) {
         List<Course> courses;
-        switch (USER_ROLE.valueOf(user.getRole())) {
-            case ROLE_STUDENT -> courses = this.courseRepository.findByStudentId(user.getId());
-            case ROLE_TEACHER -> courses = this.courseRepository.findByTeacherId(user.getId());
-            default -> courses = this.courseRepository.findAll();
+        Specification<Course> spec = Specification.unrestricted();
+
+        // apply role filter
+        switch (USER_ROLE.valueOf(user.getRole())){
+            case ROLE_TEACHER -> spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("teacher").get("id"), user.getId()));
+            case ROLE_STUDENT ->  spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("enrollments").get("student").get("id"), user.getId()));
         }
 
-        return courses.stream()
+        if(Objects.nonNull(specificationDTO.getTerm())) {
+            spec = spec.and((root, query, cb) -> cb.or(
+                    cb.like(cb.lower(root.get("name")), "%" + specificationDTO.getTerm().toLowerCase() + "%"),
+                    cb.like(cb.lower(root.get("description")), "%" + specificationDTO.getTerm().toLowerCase() + "%")
+            ));
+        }
+
+        return this.courseRepository.findAll(spec)
+                .stream()
                 .map(this::mapEntityToDTO)
                 .toList();
     }
@@ -121,7 +129,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public CourseDTO patchCourse(Long courseId, CreateCourseDTO patchCourse) {
+    public CourseDTO patchCourse(Long courseId, PatchCourseDTO patchCourse) {
         logger.info("Checking user authority to patch course");
         this.userAccessPolicy.assertCanPatchCourse(this.currentUserProvider.getCurrentUser());
 
@@ -129,16 +137,22 @@ public class CourseServiceImpl implements CourseService {
         Course course = this.getCourseEntity(courseId);
 
         logger.info("patching course  information");
+        course.setStatus(patchCourse.getStatus());
         if (Objects.nonNull(patchCourse.getName()) && !patchCourse.getName().trim().isBlank())
             course.setName(patchCourse.getName());
         if (Objects.nonNull(patchCourse.getDescription()) && !patchCourse.getDescription().trim().isBlank())
             course.setDescription(patchCourse.getDescription());
 
+
         if (Objects.nonNull(patchCourse.getTeacherId()) && patchCourse.getTeacherId() != 0) {
-            logger.info("Updating course assigned teacher");
+            logger.info("Checking new teacher existence");
             if (!this.teacherRepository.existsById(patchCourse.getTeacherId()))
                 throw new EntityNotFoundException("Teacher with ID "+patchCourse.getTeacherId()+" not found");
-            course.setTeacher(this.teacherRepository.getReferenceById(patchCourse.getTeacherId()));
+
+            if (!Objects.equals(course.getTeacher().getId(), patchCourse.getTeacherId())) {
+                logger.info("Updating course assigned teacher");
+                course.setTeacher(this.teacherRepository.getReferenceById(patchCourse.getTeacherId()));
+            }
         }
 
         this.courseRepository.save(course);
@@ -146,7 +160,22 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private CourseDTO mapEntityToDTO(Course course) {
-        return new CourseDTO(course.getId(), course.getName(), course.getDescription(), this.teacherService.getBydId(course.getTeacher().getId()));
+        return CourseDTO.builder()
+                .id(course.getId())
+                .name(course.getName())
+                .status(course.getStatus())
+                .description(course.getDescription())
+                .teacher(this.mapEntityToDTO(course.getTeacher()))
+                .build();
+    }
+
+    private TeacherDTO mapEntityToDTO(Teacher teacher) {
+        return TeacherDTO.builder()
+                .id(teacher.getId())
+                .code(teacher.getCode())
+                .firstName(teacher.getFirstName())
+                .lastName(teacher.getLastName())
+                .build();
     }
 
     private Course getCourseEntity(Long courseId){

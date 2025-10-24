@@ -1,9 +1,6 @@
 package com.school_management.api.services.interfaces;
 
-import com.school_management.api.dto.CourseDTO;
-import com.school_management.api.dto.CourseStudentsDTO;
-import com.school_management.api.dto.CreateCourseDTO;
-import com.school_management.api.dto.StudentDTO;
+import com.school_management.api.dto.*;
 import com.school_management.api.entities.User;
 
 import java.nio.file.AccessDeniedException;
@@ -15,11 +12,11 @@ public interface CourseService {
 
     CourseDTO getCourseById(Long courseId);
 
-    List<CourseDTO> getCoursesForUser(User user);
+    List<CourseDTO> getCoursesForUser(User user, SpecificationDTO specificationDTO);
 
     void removeCourse(Long courseId);
 
     Set<StudentDTO> getCourseWithStudents(Long courseId);
 
-    CourseDTO patchCourse(Long courseId, CreateCourseDTO patchCourse);
+    CourseDTO patchCourse(Long courseId, PatchCourseDTO patchCourse);
 }

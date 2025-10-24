@@ -1,9 +1,6 @@
 package com.school_management.api.rest.interfaces;
 
-import com.school_management.api.dto.CourseDTO;
-import com.school_management.api.dto.CourseStudentsDTO;
-import com.school_management.api.dto.CreateCourseDTO;
-import com.school_management.api.dto.StudentDTO;
+import com.school_management.api.dto.*;
 import com.school_management.api.entities.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +16,7 @@ public interface CourseRestController {
     ResponseEntity<CourseDTO> createCourse(@Validated @RequestBody CreateCourseDTO createCourseDTO);
 
     @GetMapping
-    ResponseEntity<List<CourseDTO>> getCourses(User user);
+    ResponseEntity<List<CourseDTO>> getCourses(User user, SpecificationDTO specificationDTO);
 
     @GetMapping("/{courseId}")
     ResponseEntity<CourseDTO> getCourseById(@PathVariable Long courseId);
@@ -28,7 +25,7 @@ public interface CourseRestController {
     ResponseEntity<Set<StudentDTO>> getCourseStudents(@PathVariable Long courseId);
 
     @PatchMapping("/{courseId}")
-    ResponseEntity<CourseDTO> patchCourse(@PathVariable Long courseId, @RequestBody CreateCourseDTO patchCourse);
+    ResponseEntity<CourseDTO> patchCourse(@PathVariable Long courseId, @RequestBody PatchCourseDTO patchCourse);
 
     @DeleteMapping("/{courseId}")
     ResponseEntity deleteCourse(@PathVariable Long courseId);

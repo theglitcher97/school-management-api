@@ -22,6 +22,9 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "status")
+    private Boolean status;
+
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;

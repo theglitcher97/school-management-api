@@ -1,9 +1,6 @@
 package com.school_management.api.rest.impls;
 
-import com.school_management.api.dto.CourseDTO;
-import com.school_management.api.dto.CourseStudentsDTO;
-import com.school_management.api.dto.CreateCourseDTO;
-import com.school_management.api.dto.StudentDTO;
+import com.school_management.api.dto.*;
 import com.school_management.api.entities.User;
 import com.school_management.api.rest.interfaces.CourseRestController;
 import com.school_management.api.services.interfaces.CourseService;
@@ -13,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,8 +29,8 @@ public class CourseRestControllerImpl implements CourseRestController {
     }
 
     @Override
-    public ResponseEntity<List<CourseDTO>> getCourses(@CurrentUser User user) {
-        return new ResponseEntity<>(this.courseService.getCoursesForUser(user), HttpStatus.OK);
+    public ResponseEntity<List<CourseDTO>> getCourses(@CurrentUser User user, SpecificationDTO specificationDTO) {
+        return new ResponseEntity<>(this.courseService.getCoursesForUser(user, specificationDTO), HttpStatus.OK);
     }
 
     @Override
@@ -47,7 +45,7 @@ public class CourseRestControllerImpl implements CourseRestController {
     }
 
     @Override
-    public ResponseEntity<CourseDTO> patchCourse(Long courseId, CreateCourseDTO patchCourse) {
+    public ResponseEntity<CourseDTO> patchCourse(Long courseId, PatchCourseDTO patchCourse) {
         return ResponseEntity.ok().body(this.courseService.patchCourse(courseId, patchCourse));
     }
 

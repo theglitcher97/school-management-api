@@ -72,7 +72,7 @@ public class AppConfig {
     public CorsConfigurationSource configurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*")); // allow headers (consider restricting for security)
         configuration.setAllowCredentials(true); // allow sending credential (cookies, auth headers
         configuration.setMaxAge(3600L); // Cache preflight response for 1 hour
